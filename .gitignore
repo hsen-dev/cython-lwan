@@ -1,0 +1,10 @@
+*.pyc
+*.pyo
+*.c
+*.h
+*.so
+/build/
+/dist/
+
+!interface.c
+
