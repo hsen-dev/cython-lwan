@@ -25,3 +25,12 @@ make run
 ```
 
 Your server should be listening on `0.0.0.0:8080`.
+
+## Golang
+
+A Go HTTP server is also provided for comparison. It uses the standard "net/http" package. To run it:
+
+```shell
+go run golang/server.go
+```
+
