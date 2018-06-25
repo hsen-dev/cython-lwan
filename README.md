@@ -28,9 +28,10 @@ Your server should be listening on `0.0.0.0:8080`.
 
 ## Golang
 
-A Go HTTP server is also provided for comparison. It uses the standard "net/http" package. To run it:
+A Go HTTP server is also provided for comparison. It uses two different implementations:
 
-```shell
-go run golang/server.go
-```
+| Implementation | How to run it |
+|---|---|
+| `net/http` | `go run golang/server.go -fast=0` |
+| `fasthttp` | `go run golang/server.go -fast=1` |
 
