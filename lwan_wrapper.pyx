@@ -1,12 +1,8 @@
 from libc.string cimport strlen
 
 cdef extern from "lwan/lwan.h":
-  struct lwan_strbuf:
-    pass
-  struct lwan_value:
-    char* value
   struct lwan_request:
-    lwan_value original_url
+    pass
   struct lwan_response:
     char *mime_type
     lwan_strbuf *buffer
