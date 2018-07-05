@@ -5,7 +5,7 @@ from Cython.Build import cythonize
 setup(
   ext_modules = cythonize([
     Extension("lwan",
-              sources=["lwan_wrapper.pyx", "interface.c"],
+              sources=["lwan_wrapper.pyx"],
               libraries=["lwan"],
     )
   ])

@@ -1,30 +1,36 @@
 from libc.string cimport strlen
+from libc.stdlib cimport calloc, free
 
-cdef extern from "lwan/lwan.h":
+cdef extern from "lwan/lwan.h" nogil:
+  struct lwan:
+    pass
+
   struct lwan_request:
     pass
+    
   struct lwan_response:
     char *mime_type
     lwan_strbuf *buffer
   
   enum lwan_http_status:
     HTTP_OK
+  
+  struct lwan_url_map:
+    lwan_http_status (*handler)(lwan_request *request, lwan_response *response, void *data)
+    char *prefix
 
-cdef extern from "lwan/lwan-strbuf.h":
+  void lwan_init(lwan *l)
+  void lwan_set_url_map(lwan *l, lwan_url_map *map)
+  void lwan_main_loop(lwan *l)
+  void lwan_shutdown(lwan *l)
+
   struct lwan_strbuf:
     pass
 
-  bint lwan_strbuf_set_static(lwan_strbuf *s1, const char *s2, size_t sz) nogil
-  bint lwan_strbuf_printf(lwan_strbuf *s, const char *fmt, ...) nogil
+  bint lwan_strbuf_set_static(lwan_strbuf *s1, const char *s2, size_t sz)
+  bint lwan_strbuf_printf(lwan_strbuf *s, const char *fmt, ...)
 
-cdef extern from "interface.c":
-  int listen_and_serve() nogil
-
-def run():
-  with nogil:
-    listen_and_serve()
-
-cdef public int handle_root(lwan_request *request, lwan_response *response) nogil:
+cdef lwan_http_status handle_root(lwan_request *request, lwan_response *response, void *data) nogil:
   cdef char *message = "Hello, World!"
   response.mime_type = "text/plain"
   
@@ -41,9 +47,30 @@ cdef unsigned int fibonacci(unsigned int n) nogil:
   
   return a
 
-cdef public int handle_fibonacci(lwan_request *request, lwan_response *response) nogil:
+cdef lwan_http_status handle_fibonacci(lwan_request *request, lwan_response *response, void *data) nogil:
   response.mime_type = "text/plain"
   
   lwan_strbuf_printf(response.buffer, "Fibonacci(10^6) = %u (with overflow)\n", fibonacci(1000000))
   
   return HTTP_OK
+
+def run():
+  cdef:
+    lwan l
+    lwan_url_map *default_map = <lwan_url_map *> calloc(3, sizeof(lwan_url_map))
+
+  default_map[0].prefix = "/"
+  default_map[0].handler = handle_root
+  default_map[1].prefix = "/fibonacci"
+  default_map[1].handler = handle_fibonacci
+  default_map[2].prefix = NULL
+  
+  with nogil:
+    lwan_init(&l)
+  
+    lwan_set_url_map(&l, default_map)
+    lwan_main_loop(&l)
+  
+    lwan_shutdown(&l)
+  
+  free(default_map)
