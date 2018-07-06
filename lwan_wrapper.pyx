@@ -1,5 +1,4 @@
 from libc.string cimport strlen
-from libc.stdlib cimport calloc, free
 
 cdef extern from "lwan/lwan.h" nogil:
   struct lwan:
@@ -57,13 +56,11 @@ cdef lwan_http_status handle_fibonacci(lwan_request *request, lwan_response *res
 def run():
   cdef:
     lwan l
-    lwan_url_map *default_map = <lwan_url_map *> calloc(3, sizeof(lwan_url_map))
-
-  default_map[0].prefix = "/"
-  default_map[0].handler = handle_root
-  default_map[1].prefix = "/fibonacci"
-  default_map[1].handler = handle_fibonacci
-  default_map[2].prefix = NULL
+    lwan_url_map *default_map = [
+      {"prefix": "/", "handler": handle_root},
+      {"prefix": "/fibonacci", "handler": handle_fibonacci},
+      {"prefix": NULL}
+    ]
   
   with nogil:
     lwan_init(&l)
@@ -72,5 +69,3 @@ def run():
     lwan_main_loop(&l)
   
     lwan_shutdown(&l)
-  
-  free(default_map)
