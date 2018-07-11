@@ -1,7 +1,8 @@
 # Cython wrapper for the LWAN HTTP server
 
-This project is a proof of concept which aims at making an efficient multi-threaded Python server. [LWAN](https://lwan.ws/), written in C, is running under the hood. [Cython](http://cython.org/) is used to wrap it into a Python module.
+This project is a proof of concept which aims at making an efficient multi-core Python HTTP server. [LWAN](https://lwan.ws/), written in C, is running under the hood. [Cython](http://cython.org/) is used to wrap it into a Python module.
 
+A [blog post](https://www.nexedi.com/NXD-Blog.Multicore.Python.HTTP.Server) explains the process in more details.
 
 ## Usage
 
